@@ -104,7 +104,7 @@ def _parse_env(data_string):
     This is especially useful with Docker to link containers together.
     """
     # Parse
-    if isinstance(data_string, basestring):
+    if isinstance(data_string, str):
         data = filter(
             lambda l: len(l) == 2 ,
             (

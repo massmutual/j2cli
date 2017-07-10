@@ -1,6 +1,7 @@
 import os, sys
 import argparse
 
+import six
 import jinja2
 import jinja2.loaders
 from . import __version__
@@ -22,8 +23,8 @@ class FilePathLoader(jinja2.BaseLoader):
 
         # Read
         try:
-            with open(template, 'r') as f:
-                contents = f.read().decode(self.encoding)
+            with open(template, 'rb') as f:
+                contents = six.text_type(f.read(), self.encoding)
         except IOError:
             raise jinja2.TemplateNotFound(template)
 
@@ -35,11 +36,11 @@ class FilePathLoader(jinja2.BaseLoader):
 def render_template(cwd, template_path, context):
     """ Render a template
     :param template_path: Path to the template file
-    :type template_path: basestring
+    :type template_path: str
     :param context: Template data
     :type context: dict
     :return: Rendered template
-    :rtype: basestring
+    :rtype: str
     """
     env = jinja2.Environment(
         loader=FilePathLoader(cwd),
@@ -52,13 +53,12 @@ def render_template(cwd, template_path, context):
     return env \
         .get_template(template_path) \
         .render(context) \
-        .encode('utf-8')
 
 
 def render_command(cwd, environ, stdin, argv):
     """ Pure render command
     :param cwd: Current working directory (to search for the files)
-    :type cwd: basestring
+    :type cwd: str
     :param environ: Environment variables
     :type environ: dict
     :param stdin: Stdin stream
@@ -66,7 +66,7 @@ def render_command(cwd, environ, stdin, argv):
     :param argv: Command-line arguments
     :type argv: list
     :return: Rendered template
-    :rtype: basestring
+    :rtype: str
     """
     parser = argparse.ArgumentParser(
         prog='j2',
